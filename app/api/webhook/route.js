@@ -20,7 +20,7 @@ export async function POST(req) {
 
   // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error occured -- no svix headers", {
+    return new Response("Error occurred -- no svix headers", {
       status: 400,
     });
   }
@@ -43,10 +43,14 @@ export async function POST(req) {
     });
   } catch (err) {
     console.error("Error verifying webhook:", err);
-    return new Response("Error occured", {
+    return new Response("Error occurred during verification", {
       status: 400,
     });
   }
+
+  // Log information for debugging
+  console.log("Received webhook payload:", req.body);
+  console.log("Event type:", evt?.type);
 
   // Handle the event
   const eventType = evt?.type;
@@ -65,12 +69,13 @@ export async function POST(req) {
         username
       );
 
+      console.log("User is created or updated");
       return new Response("User is created or updated", {
         status: 200,
       });
     } catch (err) {
       console.error("Error creating or updating user:", err);
-      return new Response("Error occured", {
+      return new Response("Error occurred during user creation/update", {
         status: 500,
       });
     }
@@ -81,14 +86,21 @@ export async function POST(req) {
       const { id } = evt?.data;
       await deleteUser(id);
 
+      console.log("User is deleted");
       return new Response("User is deleted", {
         status: 200,
       });
     } catch (err) {
       console.error("Error deleting user:", err);
-      return new Response("Error occured", {
+      return new Response("Error occurred during user deletion", {
         status: 500,
       });
     }
   }
+
+  // Handle unrecognized event types
+  console.log("Unrecognized event type:", eventType);
+  return new Response("Unrecognized event type", {
+    status: 400,
+  });
 }
