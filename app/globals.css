@@ -4,12 +4,24 @@
 
 /* Clerk Auth forms */
 .cl-formButtonPrimary {
-  @apply bg-purple-1;
+  @apply bg-purple-2;
 }
 
 .cl-formButtonPrimary:hover {
   @apply bg-pink-1;
 }
+
+.cl-internal-b3fm6y{
+  display: none;
+}
+.cl-rootBox.cl-signIn-root,
+.cl-rootBox.cl-signUp-root{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 
 .cl-footerActionLink {
   @apply text-purple-1;

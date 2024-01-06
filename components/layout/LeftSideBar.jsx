@@ -5,7 +5,7 @@ import { Logout } from '@mui/icons-material';
 import Image from 'next/image';
 import Link from 'next/link';
 import Menu from './Menu';
-
+import { dark } from "@clerk/themes";
 
 const LeftSideBar = () => {
   return (
@@ -42,7 +42,7 @@ const LeftSideBar = () => {
             <hr />
 
             <div className="flex gap-4 items-center">
-                <UserButton />
+                <UserButton appearance={{ baseTheme: dark }} />
                 <p className="text-light-1 text-body-bold">Manage Account</p>
             </div>
 
