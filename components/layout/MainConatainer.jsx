@@ -1,9 +1,9 @@
 "use client";
 
 import React from 'react'
-import TopBar from './TopBar'
 import { pageTitles } from "@constants";
 import { usePathname } from 'next/navigation';
+import TopBar from './TopBar';
 
 const MainContainer = ({ children }) => {
   // Get the current url path
