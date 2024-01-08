@@ -16,7 +16,6 @@
     "@mui/icons-material": "^5.15.3",
     "@mui/material": "^5.15.3",
     "mongoose": "^8.0.3",
-    "next": "^14.0.5-canary.43",
     "next-transpile-modules": "^10.0.1",
     "react": "^18",
     "react-dom": "^18",
