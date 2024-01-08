@@ -1,8 +1,10 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { createOrUpdateUser, deleteUser } from "@lib/actions/user";
+import { authMiddleware } from "@clerk/nextjs";
 
-export async function POST(req) {
+export default authMiddleware({ debug: true })(async function POST(req) {
+  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
@@ -11,29 +13,29 @@ export async function POST(req) {
     );
   }
 
+  // Get the headers
   const headerPayload = headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
 
-  // Log the values before the verify call
-  console.log("svix-id:", svix_id);
-  console.log("svix-timestamp:", svix_timestamp);
-  console.log("svix-signature:", svix_signature);
-
+  // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
     return new Response("Error occurred -- no svix headers", {
       status: 400,
     });
   }
 
+  // Get the body
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
+  // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
 
   let evt;
 
+  // Verify the payload with the headers
   try {
     evt = wh.verify(body, {
       "svix-id": svix_id,
@@ -42,14 +44,10 @@ export async function POST(req) {
     });
   } catch (err) {
     console.error("Error verifying webhook:", err);
-    return new Response("Error occurred during verification", {
+    return new Response("Error occurred", {
       status: 400,
     });
   }
-
-  // Log information for debugging
-  console.log("Received webhook payload:", req.body);
-  console.log("Event type:", evt?.type);
 
   // Handle the event
   const eventType = evt?.type;
@@ -68,13 +66,12 @@ export async function POST(req) {
         username
       );
 
-      console.log("User is created or updated");
       return new Response("User is created or updated", {
         status: 200,
       });
     } catch (err) {
       console.error("Error creating or updating user:", err);
-      return new Response("Error occurred during user creation/update", {
+      return new Response("Error occurred", {
         status: 500,
       });
     }
@@ -85,21 +82,14 @@ export async function POST(req) {
       const { id } = evt?.data;
       await deleteUser(id);
 
-      console.log("User is deleted");
       return new Response("User is deleted", {
         status: 200,
       });
     } catch (err) {
       console.error("Error deleting user:", err);
-      return new Response("Error occurred during user deletion", {
+      return new Response("Error occurred", {
         status: 500,
       });
     }
   }
-
-  // Handle unrecognized event types
-  console.log("Unrecognized event type:", eventType);
-  return new Response("Unrecognized event type", {
-    status: 400,
-  });
-}
+});
