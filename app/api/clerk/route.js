@@ -1,24 +1,26 @@
-const handler = req => {
-  const evt = req.body.evt;
+// app/api/clerk/route.js
+const { headers } = require('next/headers');
+const { Webhook } = require("svix");
 
-  switch (evt.type) {
-    case 'user.updated':
-      // Extracting properties from evt.data
-      const { id, first_name, last_name, image_url, email_addresses, username } = evt.data;
+const webhookSecret = process.env.WEBHOOK_SECRET || '';
 
-      // Use the extracted properties as needed
-      console.log('User updated:', { id, first_name, last_name, image_url, email_addresses, username });
+async function validateRequest(request) {
+  const payloadString = await request.text();
+  const headerPayload = headers();
 
-      // Return a success response
-      return Response.json({ message: 'User updated successfully' });
-
-    // Add other cases as needed for different event types
-
-    default:
-      console.log('Unhandled event type:', evt.type);
-  }
+  const svixHeaders = {
+    "svix-id": headerPayload.get("svix-id") || '',
+    "svix-timestamp": headerPayload.get("svix-timestamp") || '',
+    "svix-signature": headerPayload.get("svix-signature") || '',
+  };
+  const wh = new Webhook(webhookSecret);
+  return wh.verify(payloadString, svixHeaders);
 }
 
-// Export the handler if needed
-export default handler;
+async function POST(request) {
+  const payload = await validateRequest(request);
+  console.log(payload);
+  return Response.json({ message: "Received" });
+}
 
+module.exports = POST;
