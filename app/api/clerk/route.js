@@ -1,4 +1,3 @@
-// app/api/clerk/route.js
 const handler = req => {
   const evt = req.body.evt;
 
@@ -9,7 +8,9 @@ const handler = req => {
 
       // Use the extracted properties as needed
       console.log('User created:', { id, first_name, last_name, image_url, email_addresses, username });
-      break;
+
+      // Return a success response
+      return Response.json({ message: 'User created successfully' });
 
     // Add other cases as needed for different event types
 
