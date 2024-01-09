@@ -2,15 +2,15 @@ const handler = req => {
   const evt = req.body.evt;
 
   switch (evt.type) {
-    case 'user.created':
+    case 'user.updated':
       // Extracting properties from evt.data
       const { id, first_name, last_name, image_url, email_addresses, username } = evt.data;
 
       // Use the extracted properties as needed
-      console.log('User created:', { id, first_name, last_name, image_url, email_addresses, username });
+      console.log('User updated:', { id, first_name, last_name, image_url, email_addresses, username });
 
       // Return a success response
-      return Response.json({ message: 'User created successfully' });
+      return Response.json({ message: 'User updated successfully' });
 
     // Add other cases as needed for different event types
 
@@ -21,3 +21,4 @@ const handler = req => {
 
 // Export the handler if needed
 export default handler;
+
