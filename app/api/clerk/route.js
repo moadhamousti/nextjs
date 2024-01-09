@@ -20,4 +20,4 @@ const handler = req => {
 }
 
 // Export the handler if needed
-module.exports = handler;
+export default handler;
